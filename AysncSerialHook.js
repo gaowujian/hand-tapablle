@@ -29,14 +29,12 @@ class AsyncSeriesHook {
       //   next(task);
 
       const [first, ...others] = this.tasks;
+
       return others
-        .reduce(
-          (preTask, curTask) =>
-            preTask(...args)
-              .then(() => curTask(...args))
-              .catch(reject),
-          first
-        )
+        .reduce((pre, curTask) => {
+          //   console.log("preTask:", preTask);
+          return pre.then(() => curTask(...args)).catch(reject);
+        }, first(...args))
         .then(resolve)
         .catch(reject);
     });

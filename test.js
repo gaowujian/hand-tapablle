@@ -1,24 +1,39 @@
-const { AsyncParallelHook } = require("tapable");
-
-let queue1 = new AsyncParallelHook(["name"]);
-console.time("cost");
-queue1.tap("1", function (name) {
-  console.log(name, 1);
+let queue3 = new AsyncSeriesHook(["name"]);
+console.time("cost3");
+queue3.tapPromise("1", function (name) {
+  return new Promise(function (resolve) {
+    setTimeout(function () {
+      console.log(name, 1);
+      resolve();
+    }, 1000);
+  });
 });
-queue1.tap("2", function (name) {
-  console.log(name, 2);
+queue3.tapPromise("2", function (name, callback) {
+  return new Promise(function (resolve) {
+    setTimeout(function () {
+      console.log(name, 2);
+      resolve();
+    }, 2000);
+  });
 });
-queue1.tap("3", function (name) {
-  console.log(name, 3);
+queue3.tapPromise("3", function (name, callback) {
+  return new Promise(function (resolve) {
+    setTimeout(function () {
+      console.log(name, 3);
+      resolve();
+    }, 3000);
+  });
 });
-queue1.callAsync("webpack", (err) => {
-  console.timeEnd("cost");
+queue3.promise("webapck").then((err) => {
+  console.log(err);
+  console.timeEnd("cost3");
 });
 
 // Results of the
 /* 
-webpack 1
-webpack 2
-webpack 3
-cost: 4.520ms
+webapck 1
+webapck 2
+webapck 3
+undefined
+cost3: 6021.817ms
 */
